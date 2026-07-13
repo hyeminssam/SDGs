@@ -376,7 +376,7 @@
   .game-score{ font-family:'Space Mono',monospace; font-size:15px; color: var(--amber); font-weight:700; }
   .next-preview{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; }
   #gameCanvas{
-    width:100%; aspect-ratio: 3/4.1; background:#0B1A15; border-radius:16px;
+    width:100%; aspect-ratio: 320/440; background:#0B1A15; border-radius:16px;
     border: 2px solid var(--line); touch-action:none; display:block; margin-bottom:12px;
   }
   .game-actions{ display:flex; gap:10px; margin-bottom: 14px; }
@@ -606,7 +606,7 @@
       <div class="next-preview">다음 <span id="nextBallIcon">🌱</span></div>
     </div>
     <div class="game-over-msg" id="gameOverMsg">게임 종료! 아래에서 점수를 등록해보세요.</div>
-    <canvas id="gameCanvas" width="300" height="410"></canvas>
+    <canvas id="gameCanvas" width="320" height="440"></canvas>
     <div class="game-actions">
       <div class="btn ghost" style="flex:1;" onclick="restartGame()">다시하기</div>
       <div class="btn" style="flex:1;" onclick="submitScore()">점수 등록</div>
@@ -700,12 +700,6 @@ const STAGES = {
         ],
         correct: 0
       }
-    ],
-    short: [
-      { q: "탐구 문제에 대해 예상되는 결과를 검증할 수 있도록 서술한 것을 무엇이라고 하나요?", answers: ["가설"] },
-      { q: "실험에서 일부러 변화시키는 조건과 똑같이 유지해야 하는 조건을 통틀어 무엇이라고 하나요?", answers: ["변인"] },
-      { q: "실험 결과를 표·그래프 등으로 정리해 규칙성을 찾고 내리는 최종 판단을 무엇이라 하나요?", answers: ["결론", "결론도출"] },
-      { q: "관찰하거나 측정한 내용을 정확히 기록하며 실험 계획대로 진행하는 단계를 무엇이라 하나요?", answers: ["탐구수행", "탐구 수행"] }
     ],
     ox: [
       { q: "가설은 검증할 수 없어도 상관없다.", answer: false },
@@ -832,12 +826,6 @@ const STAGES = {
         correct: 0
       }
     ],
-    short: [
-      { q: "지구가 태양 주위를 돈다는 이론으로, 지구가 우주의 중심이라는 인류의 생각을 바꾸는 계기가 된 것은 무엇인가요?", answers: ["태양중심설", "태양 중심설"] },
-      { q: "파스퇴르의 연구를 계기로 개발이 시작되어 질병을 예방하는 데 쓰이는 물질은 무엇인가요?", answers: ["백신"] },
-      { q: "사람의 DNA 염기 서열을 분석해 완성한, 유전자의 위치를 나타낸 것은 무엇인가요?", answers: ["유전자지도", "유전자 지도"] },
-      { q: "모든 사물을 인터넷으로 연결해 정보를 주고받는 기술을 알파벳 약자로 무엇이라 하나요?", answers: ["iot"] }
-    ],
     ox: [
       { q: "증기 기관의 발명은 산업혁명과 관련이 없다.", answer: false },
       { q: "생명공학기술로 인공 장기나 인공 뼈를 만들 수 있다.", answer: true },
@@ -958,12 +946,6 @@ const STAGES = {
         correct: 0
       }
     ],
-    short: [
-      { q: "유엔이 2030년까지 달성하려고 세운 목표를 무엇이라고 하나요? (한글 또는 영어 약자)", answers: ["지속가능발전목표", "sdgs"] },
-      { q: "수소, 풍력, 태양 에너지처럼 화석 연료를 대체하는 에너지를 통틀어 무엇이라고 하나요?", answers: ["신재생에너지", "신재생 에너지"] },
-      { q: "빛, 온도, 습도, 토양 수분·영양분을 자동으로 관리해 농작물 생산량과 품질을 높이는 농장 기술은 무엇인가요?", answers: ["스마트팜", "스마트 팜"] },
-      { q: "미래 세대가 사용할 자원을 낭비·손상하지 않고 조화와 균형을 이루는 삶을 무엇이라 하나요?", answers: ["지속가능한삶"] }
-    ],
     ox: [
       { q: "스마트팜은 전기 에너지를 전혀 사용하지 않는다.", answer: false },
       { q: "폐플라스틱 재활용 기술은 오염 물질을 줄이는 데 도움이 된다.", answer: true },
@@ -1069,14 +1051,13 @@ function buildQuestionInstance(kind, item){
 function renderQuestions(stageNum){
   const container = document.getElementById('q-stage' + stageNum);
   const s = STAGES[stageNum];
-  const pickedMC = shuffleArr(s.mc).slice(0, 3).map(q => buildQuestionInstance('mc', q));
-  const pickedShort = shuffleArr(s.short).slice(0, 2).map(q => buildQuestionInstance('short', q));
+  const pickedMC = shuffleArr(s.mc).slice(0, 5).map(q => buildQuestionInstance('mc', q));
   const pickedOx = shuffleArr(s.ox).slice(0, 2).map(q => buildQuestionInstance('ox', q));
   const useMatch = rng() < 0.5;
   const pickedSpecial = useMatch
     ? [buildQuestionInstance('match', shuffleArr(s.match)[0])]
     : [buildQuestionInstance('order', shuffleArr(s.order)[0])];
-  const active = shuffleArr([...pickedMC, ...pickedShort, ...pickedOx, ...pickedSpecial]);
+  const active = shuffleArr([...pickedMC, ...pickedOx, ...pickedSpecial]);
   STAGES[stageNum].active = active;
   container.innerHTML = '';
   active.forEach((item, qi) => {
@@ -1535,13 +1516,13 @@ function saveDrawing(){
 }
 
 /* ================== 미니게임: 에너지 방울 합치기 ================== */
-const BALL_ICONS = ['🌱','💧','🔥','🍃','☀️','🌍'];
-const BALL_COLORS = ['#4CAF7D','#3B7DD8','#E2574C','#7CC96B','#FFC145','#59C1D6'];
+const BALL_ICONS = ['🌱','💧','🍃','🔥','☀️','🌊','🌾','🌳','🏞️','🌍'];
+const BALL_COLORS = ['#8FD97A','#59C1D6','#7CC96B','#E2574C','#FFC145','#3B9DD8','#E0B25A','#4CAF7D','#59A9D9','#2E86AB'];
 let gameCanvas, gameCtx, balls = [], gameScore = 0, gameRunning = false, gameOver = false;
 let nextLevel = 1, animId = null, dropCooldown = false, overTimer = 0;
-const GW = 300, GH = 410, WALL = 10, TOPLINE = 56;
+const GW = 320, GH = 440, WALL = 10, TOPLINE = 58;
 
-function levelRadius(level){ return 16 + level * 9; }
+function levelRadius(level){ return 13 + level * 6; }
 
 function initGameCanvas(){
   gameCanvas = document.getElementById('gameCanvas');
