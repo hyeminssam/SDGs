@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>연구소 미션: 지속가능한 삶</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1E1B;
+    --panel: #16302A;
+    --panel-2: #1D3B32;
+    --line: #2C4A40;
+    --leaf: #4CAF7D;
+    --leaf-dim: #3A8A63;
+    --amber: #FFC145;
+    --alert: #E2574C;
+    --text: #F4F1E8;
+    --muted: #9FB8AC;
+    --radius: 18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(circle at 50% -10%, #1B3A31 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    padding: 0;
+  }
+  #app{
+    width:100%;
+    max-width: 480px;
+    min-height:100vh;
+    background: var(--bg);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 0 60px rgba(0,0,0,0.5);
+  }
+
+  /* ---- tablet (iPad-class) layout ---- */
+  @media (min-width: 700px){
+    body{ padding: 28px 0; }
+    #app{
+      max-width: 720px;
+      min-height: auto;
+      border-radius: 26px;
+      overflow: hidden;
+    }
+    #logbar{ padding: 16px 34px 12px; }
+    .slot{ width:40px; height:40px; font-size:16px; }
+    .screen{ padding: 34px 60px 56px; }
+    #screen-intro{ padding-top: 6vh; }
+    #screen-intro h1{ font-size: 44px; }
+    #screen-intro p.lead{ font-size: 16.5px; }
+    .badge-ring{ width:130px; height:130px; font-size:54px; }
+    .brief-card{ font-size:15.5px; padding:20px 24px; }
+    .stage-head h2{ font-size: 30px; }
+    .stage-head p{ font-size: 15px; }
+    .brief{ font-size: 16px; padding: 22px 26px; }
+    .brief table{ font-size:14.5px; }
+    .qcard{ padding: 20px 22px 18px; }
+    .qcard .qtext{ font-size: 17px; }
+    .opt{ font-size: 15.5px; padding: 13px 16px; }
+    .btn{ font-size: 17px; padding: 17px 24px; max-width: 420px; margin-left:auto; margin-right:auto; }
+    .review-list{ padding: 20px 24px; }
+    .review-item{ font-size: 15px; }
+  }
+
+  @media (min-width: 700px) and (orientation: landscape){
+    #app{ max-width: 640px; }
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    color: var(--leaf);
+    text-transform:uppercase;
+    font-weight:700;
+  }
+  h1,h2,h3{ font-family:'Black Han Sans', sans-serif; font-weight:400; letter-spacing:0.01em; margin:0; }
+
+  /* ---- top log bar ---- */
+  #logbar{
+    position: sticky; top:0; z-index:20;
+    background: rgba(15,30,27,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 18px 8px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  #logbar .brand{ font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:0.08em;}
+  .slots{ display:flex; gap:6px; }
+  .slot{
+    width:34px; height:34px; border-radius:8px;
+    border: 1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace; font-weight:700; font-size:14px;
+    color: var(--muted); background: var(--panel);
+    transition: all .4s ease;
+  }
+  .slot.filled{
+    color: var(--bg); background: var(--amber); border-color: var(--amber);
+    box-shadow: 0 0 14px rgba(255,193,69,0.55);
+  }
+
+  .screen{ display:none; flex-direction:column; flex:1; padding: 22px 20px 40px; animation: fadeIn .5s ease; }
+  .screen.active{ display:flex; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---- intro ---- */
+  #screen-intro{ justify-content:center; text-align:center; gap:18px; padding-top:10vh;}
+  .badge-ring{
+    width:110px;height:110px;border-radius:50%;
+    margin: 0 auto;
+    border: 2px dashed var(--leaf-dim);
+    display:flex;align-items:center;justify-content:center;
+    font-size:44px;
+    animation: spin 22s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg);} }
+  #screen-intro h1{ font-size: 34px; line-height:1.25; color:var(--text); }
+  #screen-intro h1 span{ color: var(--leaf); }
+  #screen-intro p.lead{ color: var(--muted); font-size:15px; line-height:1.7; padding: 0 6px;}
+  .brief-card{
+    text-align:left; background:var(--panel); border:1px solid var(--line);
+    border-radius: var(--radius); padding:16px 18px; margin-top:8px;
+    font-size:14px; line-height:1.75; color:var(--text);
+  }
+  .brief-card b{color:var(--amber);}
+
+  /* ---- generic buttons ---- */
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif; font-weight:700; font-size:16px;
+    padding: 15px 20px; border-radius: 100px;
+    background: var(--leaf); color: #0B1A15;
+    width:100%;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .2s;
+    box-shadow: 0 6px 0 var(--leaf-dim);
+  }
+  .btn:active{ transform: translateY(4px); box-shadow: 0 2px 0 var(--leaf-dim); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; box-shadow:none; }
+  .btn.ghost{
+    background:transparent; color:var(--text); border:1.5px solid var(--line); box-shadow:none;
+  }
+  .btn.small{ width:auto; padding:10px 18px; font-size:14px; }
+
+  /* ---- stage screens ---- */
+  .stage-head{ margin-bottom: 14px; }
+  .stage-head .eyebrow{ margin-bottom:6px; display:block; }
+  .stage-head h2{ font-size:24px; color:var(--text); }
+  .stage-head p{ color:var(--muted); font-size:13.5px; margin-top:4px;}
+
+  .brief{
+    background: var(--panel);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+  .brief h3{ font-family:'Noto Sans KR'; font-weight:900; font-size:14px; color: var(--amber); margin-bottom:6px;}
+  .brief .tag{
+    display:inline-block; background: rgba(76,175,125,0.15); color: var(--leaf);
+    font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin: 2px 6px 2px 0;
+  }
+  .brief table{ width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;}
+  .brief td{ border-top:1px solid var(--line); padding:6px 4px; vertical-align:top; }
+  .brief td:first-child{ color:var(--amber); font-weight:700; white-space:nowrap; padding-right:8px;}
+
+  .qcard{
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
+    margin-bottom: 14px;
+  }
+  .qcard .qnum{
+    font-family:'Space Mono',monospace; font-size:11px; color: var(--leaf); font-weight:700; margin-bottom:6px; display:block;
+  }
+  .qcard .qtext{ font-size:15px; font-weight:500; line-height:1.55; margin-bottom:12px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:10px;
+    padding: 11px 13px; border-radius:12px; border:1.5px solid var(--line);
+    margin-bottom:8px; cursor:pointer; font-size:14px; line-height:1.5;
+    background: var(--bg);
+    transition: border-color .15s, background .15s;
+  }
+  .opt:active{ background: #142a24; }
+  .opt input{ margin-top:2px; accent-color: var(--leaf); flex-shrink:0; }
+  .opt.correct{ border-color: var(--leaf); background: rgba(76,175,125,0.14); }
+  .opt.wrong{ border-color: var(--alert); background: rgba(226,87,76,0.14); }
+  .qcard .fb{ font-size:12.5px; margin-top:6px; font-weight:700; }
+  .fb.ok{ color: var(--leaf); }
+  .fb.no{ color: var(--alert); }
+  .short-wrap{ display:flex; align-items:center; gap:8px; }
+  .short-wrap .stag{
+    font-family:'Space Mono',monospace; font-size:10.5px; color:var(--amber);
+    border:1px solid var(--amber); border-radius:6px; padding:2px 6px; flex-shrink:0;
+  }
+  .short-input{
+    flex:1; background: var(--bg); border:1.5px solid var(--line); border-radius:12px;
+    color:var(--text); font-size:15px; padding:12px 14px; font-family:'Noto Sans KR';
+  }
+  .short-input:focus{ outline:none; border-color: var(--leaf); }
+  .short-input.correct{ border-color: var(--leaf); background: rgba(76,175,125,0.1); }
+  .short-input.wrong{ border-color: var(--alert); background: rgba(226,87,76,0.1); }
+
+  /* ---- OX 터트리기 ---- */
+  .ox-wrap{ display:flex; gap:12px; }
+  .ox-btn{
+    flex:1; aspect-ratio:1; border-radius:50%; border:2px solid var(--line);
+    background: var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-size:28px; cursor:pointer; gap:2px; max-height:88px; transition: transform .12s, border-color .15s;
+  }
+  .ox-btn span{ font-size:11px; color:var(--muted); font-weight:700; }
+  .ox-btn:active{ transform: scale(0.94); }
+  .ox-btn.selected{ border-color: var(--amber); box-shadow: 0 0 0 2px rgba(255,193,69,0.25); }
+  .ox-btn.correct{ border-color: var(--leaf); background: rgba(76,175,125,0.14); }
+  .ox-btn.wrong{ border-color: var(--alert); background: rgba(226,87,76,0.14); }
+
+  /* ---- 순서 맞추기 ---- */
+  .order-hint{ font-size:11.5px; color:var(--muted); margin-bottom:6px; }
+  .order-pool, .order-selected{ display:flex; flex-wrap:wrap; gap:8px; min-height:44px; }
+  .order-selected{
+    margin-top:8px; padding:8px; border:1.5px dashed var(--leaf-dim); border-radius:12px; background: rgba(76,175,125,0.06);
+  }
+  .order-chip{
+    background: var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:9px 12px;
+    font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px; user-select:none;
+  }
+  .order-chip.placed{ border-color: var(--leaf); cursor:default; }
+  .seq-badge{
+    background: var(--amber); color:var(--bg); font-family:'Space Mono',monospace; font-weight:700; font-size:11px;
+    width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .mini-reset{ font-size:12px; color:var(--muted); text-decoration:underline; margin-top:8px; cursor:pointer; display:inline-block; }
+
+  /* ---- 드래그 매칭 ---- */
+  .match-wrap{ display:flex; flex-direction:column; gap:12px; }
+  .match-left{ display:flex; flex-direction:column; gap:8px; }
+  .match-row{ display:flex; align-items:center; gap:8px; }
+  .match-label{ flex:0 0 34%; font-size:12.5px; background: var(--bg); border:1px solid var(--line); border-radius:10px; padding:9px 10px; }
+  .drop-zone{
+    flex:1; min-height:42px; border:2px dashed var(--line); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; padding:6px 8px;
+    font-size:12px; color:var(--muted); text-align:center; transition: border-color .15s;
+  }
+  .drop-zone.filled{ border-style:solid; border-color: var(--leaf); background: rgba(76,175,125,0.08); }
+  .drop-zone .drag-chip{ margin:0; width:100%; text-align:center; }
+  .match-tray{
+    display:flex; flex-wrap:wrap; gap:8px; padding:10px; background: var(--bg);
+    border-radius:12px; border:1px dashed var(--line); min-height:50px;
+  }
+  .drag-chip{
+    background: var(--panel-2); border:1.5px solid var(--leaf-dim); border-radius:10px;
+    padding:8px 12px; font-size:12px; cursor:grab; touch-action:none; user-select:none; line-height:1.4;
+  }
+  .drag-chip.dragging{ position:fixed; z-index:999; pointer-events:none; box-shadow:0 8px 20px rgba(0,0,0,0.45); opacity:.95; }
+
+  .submit-row{ margin-top: 6px; }
+  .status-msg{ text-align:center; font-size:13px; color:var(--muted); margin-top:10px; min-height:18px; }
+
+  /* ---- fragment reveal overlay ---- */
+  .overlay{
+    position:fixed; inset:0; background: rgba(6,14,12,0.88);
+    display:none; align-items:center; justify-content:center; z-index:50;
+    backdrop-filter: blur(3px);
+  }
+  .overlay.active{ display:flex; }
+  .reveal-card{
+    background: var(--panel); border:1.5px solid var(--amber); border-radius:22px;
+    padding: 30px 26px; width: 86%; max-width:340px; text-align:center;
+    box-shadow: 0 0 40px rgba(255,193,69,0.25);
+  }
+  .reveal-card .eyebrow{ color: var(--amber); }
+  .frag{
+    font-family:'Space Mono',monospace; font-weight:700; font-size:52px; color: var(--amber);
+    margin: 14px 0; letter-spacing: 0.05em;
+    text-shadow: 0 0 18px rgba(255,193,69,0.5);
+  }
+  .reveal-card p{ color: var(--muted); font-size:13.5px; line-height:1.6; margin-bottom:18px;}
+
+  /* ---- final ---- */
+  .code-input-wrap{ display:flex; gap:10px; margin-bottom: 14px; }
+  #finalNumInput{
+    flex:1; font-family:'Space Mono',monospace; font-size:24px; letter-spacing:0.2em;
+    text-align:center; background: var(--panel-2); border:1.5px solid var(--line); border-radius:12px;
+    color: var(--text); padding: 12px 8px;
+  }
+  #finalNumInput:focus{ outline:none; border-color: var(--leaf); }
+  select#finalKeyword{
+    width:100%; font-size:15px; padding:12px; border-radius:12px; background: var(--panel-2);
+    color: var(--text); border:1.5px solid var(--line); margin-bottom:16px;
+  }
+  .hint-toggle{ font-size:12.5px; color: var(--muted); text-align:center; margin-top:12px; text-decoration:underline; cursor:pointer;}
+  .hint-box{ display:none; background:var(--panel); border-radius:12px; padding:12px; font-size:12.5px; color:var(--muted); margin-top:10px; line-height:1.6;}
+  .hint-box.active{ display:block; }
+
+  /* ---- complete ---- */
+  #screen-complete{ text-align:center; }
+  .stamp{
+    width:130px; height:130px; border-radius:50%; margin: 6px auto 18px;
+    border: 3px solid var(--leaf); display:flex; align-items:center; justify-content:center;
+    font-family:'Black Han Sans'; font-size:16px; color:var(--leaf); text-align:center; line-height:1.3;
+    transform: rotate(-8deg);
+    box-shadow: 0 0 30px rgba(76,175,125,0.3);
+  }
+  .review-list{ text-align:left; background:var(--panel); border-radius:var(--radius); border:1px solid var(--line); padding:16px 18px; margin: 16px 0; }
+  .review-list .rtitle{ font-weight:900; font-size:13px; color:var(--amber); margin: 10px 0 6px; }
+  .review-item{ display:flex; gap:8px; align-items:flex-start; font-size:13.5px; line-height:1.6; margin-bottom:8px; color: var(--text);}
+  .review-item input{ margin-top:3px; accent-color: var(--leaf); }
+  textarea#reflection{
+    width:100%; min-height:90px; background: var(--panel-2); border:1.5px solid var(--line);
+    border-radius:12px; color:var(--text); font-family:'Noto Sans KR'; font-size:14px; padding:12px;
+    margin-top: 4px; resize:vertical;
+  }
+  textarea#reflection:focus{ outline:none; border-color:var(--leaf); }
+  label.rlabel{ font-size:12.5px; color:var(--muted); display:block; margin-bottom:6px; text-align:left;}
+
+  footer.nav{ margin-top:auto; padding-top:18px; }
+
+  /* ---- name gate ---- */
+  .name-gate{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; margin-top: 18px; text-align:left;
+  }
+  .name-gate label{ font-size:12.5px; color:var(--muted); display:block; margin-bottom:6px; }
+  .name-gate input{
+    width:100%; background: var(--panel-2); border:1.5px solid var(--line); border-radius:10px;
+    color:var(--text); font-size:15px; padding:11px 12px; font-family:'Noto Sans KR';
+  }
+  .name-gate input:focus{ outline:none; border-color:var(--leaf); }
+
+  /* ---- bonus hub ---- */
+  .bonus-hub{ display:flex; gap:10px; margin-top: 18px; }
+  .bonus-card{
+    flex:1; background: var(--panel); border:1.5px solid var(--line); border-radius:16px;
+    padding: 16px 12px; text-align:center; cursor:pointer; transition: border-color .15s, transform .15s;
+  }
+  .bonus-card:active{ transform: scale(0.97); }
+  .bonus-card .ic{ font-size: 30px; display:block; margin-bottom:6px; }
+  .bonus-card .ti{ font-weight:700; font-size:14px; }
+  .bonus-card .de{ font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;}
+  .bonus-card.leaf{ border-color: var(--leaf-dim); }
+  .bonus-card.amber{ border-color: #a9803a; }
+
+  /* ---- draw screen ---- */
+  .palette{ display:flex; gap:8px; margin: 12px 0 10px; flex-wrap:wrap; }
+  .swatch{
+    width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer;
+  }
+  .swatch.active{ border-color: #fff; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff; }
+  .brush-row{ display:flex; gap:8px; margin-bottom: 12px; }
+  .brush-btn{
+    flex:1; background: var(--panel-2); border:1.5px solid var(--line); border-radius:10px;
+    color:var(--muted); padding: 8px; font-size:12.5px; cursor:pointer;
+  }
+  .brush-btn.active{ color: var(--text); border-color: var(--leaf); }
+  #drawCanvas{
+    width:100%; aspect-ratio: 4/3; background:#F4F1E8; border-radius:16px; touch-action:none;
+    display:block; margin-bottom:12px;
+  }
+  .draw-actions{ display:flex; gap:10px; }
+  .draw-actions .btn{ font-size:14px; padding:12px 14px; }
+
+  /* ---- game screen ---- */
+  .game-hud{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .game-score{ font-family:'Space Mono',monospace; font-size:15px; color: var(--amber); font-weight:700; }
+  .next-preview{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  #gameCanvas{
+    width:100%; aspect-ratio: 3/4.1; background:#0B1A15; border-radius:16px;
+    border: 2px solid var(--line); touch-action:none; display:block; margin-bottom:12px;
+  }
+  .game-actions{ display:flex; gap:10px; margin-bottom: 14px; }
+  .game-actions .btn{ font-size:14px; padding:12px 14px; }
+  .leaderboard{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .leaderboard .lb-title{ font-weight:900; font-size:13px; color:var(--amber); margin-bottom:8px; }
+  .lb-row{ display:flex; justify-content:space-between; font-size:13.5px; padding: 5px 0; border-top:1px solid var(--line); }
+  .lb-row:first-child{ border-top:none; }
+  .lb-row .rank{ color:var(--muted); width:26px; flex-shrink:0; }
+  .lb-row .nm{ flex:1; }
+  .lb-row .sc{ font-family:'Space Mono',monospace; color:var(--leaf); font-weight:700; }
+  .game-over-msg{ text-align:center; font-size:14px; color:var(--amber); font-weight:700; margin-bottom:10px; display:none; }
+  .game-over-msg.active{ display:block; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="logbar">
+    <div class="brand">RESEARCH LOG</div>
+    <div class="slots">
+      <div class="slot" id="slot1">?</div>
+      <div class="slot" id="slot2">?</div>
+      <div class="slot" id="slot3">?</div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen active" id="screen-intro">
+    <div class="badge-ring">🔬</div>
+    <h1>신남연구소<br><span>신입 연구원</span> 임무 개시</h1>
+    <p class="lead">오늘부로 당신은 신남연구소의 신입 연구원입니다.<br>연구소 메인 서버에 접속하려면 3개의 임무를 완료하고<br><b style="color:var(--amber)">접속 코드</b>를 모아야 합니다.</p>
+    <div class="brief-card">
+      <b>임무 목록</b><br>
+      1️⃣ 과학적 탐구 방법 훈련<br>
+      2️⃣ 인류 문명과 과학기술 아카이브 조사<br>
+      3️⃣ 지속가능발전목표(SDGs) 프로젝트 승인<br><br>
+      각 임무를 통과하면 <b>코드 조각</b>을 하나씩 얻습니다. 세 조각을 모두 모아야 최종 접속 코드를 완성할 수 있어요.
+    </div>
+    <div class="name-gate">
+      <label>학번</label>
+      <input type="text" id="studentId" placeholder="예: 10315 (1학년 3반 15번)" maxlength="10" inputmode="numeric" style="margin-bottom:10px;">
+      <label>이름</label>
+      <input type="text" id="studentName" placeholder="예: 김하늘" maxlength="10">
+    </div>
+    <div class="btn" onclick="startMission()" style="margin-top:14px;">임무 시작하기 →</div>
+  </section>
+
+  <!-- STAGE 1 -->
+  <section class="screen" id="screen-stage1">
+    <div class="stage-head">
+      <span class="eyebrow">MISSION 01 · 03분 브리핑</span>
+      <h2>과학적 탐구 방법</h2>
+      <p>생활 속 문제를 과학적으로 해결하는 절차를 익혀라.</p>
+    </div>
+    <div class="brief">
+      <h3>📎 연구 노트</h3>
+      과학적 탐구는 보통 <b>① 문제 인식 및 가설 설정 → ② 탐구 설계 및 수행 → ③ 결과 정리와 결론 도출</b> 순서로 진행돼요.<br><br>
+      <b>가설</b>은 탐구 문제에 대해 예상되는 결과를 <b>구체적이고 검증 가능하게</b> 서술한 것입니다.<br><br>
+      실험을 설계할 때는 <b>변인</b>을 구분해야 해요. 일부러 바꾸는 조건과, 정확한 비교를 위해 똑같이 맞춰야 하는 조건이 있습니다.<br><br>
+      <h3 style="margin-top:12px;">🧊 사례: 얼음 실험</h3>
+      "어떤 얼음을 넣어야 물이 더 빨리 차가워질까?"를 확인하기 위해 통얼음·조각 얼음·얼음 없음 세 조건의 물 온도를 5분 간격으로 측정했습니다.
+      <table>
+        <tr><td>변화시킨 조건</td><td>얼음의 크기(모양)</td></tr>
+        <tr><td>일정하게 유지</td><td>처음 물의 온도, 물의 양(300 mL), 컵의 크기</td></tr>
+        <tr><td>결과</td><td>조각 얼음을 넣은 물이 가장 빨리 온도가 낮아짐</td></tr>
+      </table>
+    </div>
+
+    <div id="q-stage1"></div>
+
+    <div class="submit-row">
+      <div class="btn" id="btn-submit-1" onclick="checkStage(1)">임무 검증하기</div>
+      <div class="status-msg" id="status-1"></div>
+    </div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="screen" id="screen-stage2">
+    <div class="stage-head">
+      <span class="eyebrow">MISSION 02 · 04분 브리핑</span>
+      <h2>과학의 발전과 인류 문명</h2>
+      <p>과학기술 아카이브를 조사해 인류 문명에 미친 영향을 파악하라.</p>
+    </div>
+    <div class="brief">
+      <h3>📎 연구 노트</h3>
+      인류는 불을 발견하고 도구를 사용하며 문명을 발전시켰습니다. 이후 과학 원리의 발견이 세상을 바꿔 왔어요.
+      <br><br>
+      <span class="tag">1600년대</span> 태양 중심설 — 지구가 우주의 중심이라는 생각을 바꾸는 계기<br>
+      <span class="tag">1700년대</span> 증기 기관 — 대량 생산 가능, 산업혁명의 원동력<br>
+      <span class="tag">1900년대</span> 페니실린 발견 — 항생제·백신 개발로 인류 수명 증가<br>
+      <span class="tag">2000년대</span> 유전자 지도 완성, 컴퓨터·반도체·스마트폰 발달<br><br>
+      오늘날에는 <b>사물 인터넷(IoT)</b>이 사물과 사물, 사람과 사물 사이 정보를 주고받으며 자율주행·무인 결제 등에 쓰이고, <b>생명공학기술</b>로 유전자를 교정하거나 인공 장기를 만들기도 합니다. <b>로봇·드론</b>은 재난 현장이나 돌봄 분야에 투입됩니다.
+    </div>
+
+    <div id="q-stage2"></div>
+
+    <div class="submit-row">
+      <div class="btn" id="btn-submit-2" onclick="checkStage(2)">임무 검증하기</div>
+      <div class="status-msg" id="status-2"></div>
+    </div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="screen" id="screen-stage3">
+    <div class="stage-head">
+      <span class="eyebrow">MISSION 03 · 04분 브리핑</span>
+      <h2>지속가능한 삶을 위한 과학기술</h2>
+      <p>SDGs 프로젝트 승인을 위한 최종 검토를 통과하라.</p>
+    </div>
+    <div class="brief">
+      <h3>📎 연구 노트</h3>
+      과학기술 발달로 삶은 풍요로워졌지만 기후 변화, 환경오염, 에너지 부족 문제도 생겼습니다. 유엔(UN)은 이를 해결하기 위해 <b>2030년</b>까지 달성할 <b>지속가능발전목표(SDGs)</b>를 세웠습니다.<br><br>
+      <b>지속가능한 삶</b>이란 미래 세대가 쓸 경제·사회·환경 자원을 낭비하거나 손상하지 않고 조화와 균형을 이루는 삶을 말해요.
+      <table>
+        <tr><td>스마트팜</td><td>센서로 온도·습도·양분을 자동 관리해 생산량↑, 단 전기 에너지 사용량도 함께 늘어남</td></tr>
+        <tr><td>폐플라스틱 재활용</td><td>폐플라스틱을 새로운 자원으로 전환 → 오염 물질 최소화</td></tr>
+        <tr><td>신재생 에너지</td><td>수소·풍력·태양 에너지 → 기후 변화 억제 + 에너지 부족 해결</td></tr>
+      </table>
+      개인 차원에서도 분리배출, 에너지 절약, 음식물 쓰레기 줄이기 같은 실천이 필요합니다.
+    </div>
+
+    <div id="q-stage3"></div>
+
+    <div class="submit-row">
+      <div class="btn" id="btn-submit-3" onclick="checkStage(3)">임무 검증하기</div>
+      <div class="status-msg" id="status-3"></div>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="screen" id="screen-final">
+    <div class="stage-head">
+      <span class="eyebrow">FINAL ACCESS</span>
+      <h2>메인 서버 접속</h2>
+      <p>모은 코드 조각을 조합해 연구소 서버에 접속하세요.</p>
+    </div>
+    <div class="brief">
+      획득한 코드 조각: <b id="fragSummary">- / - / -</b><br><br>
+      3개의 조각을 순서대로 조합한 <b>4자리 숫자 코드</b>를 입력하고, 오늘 임무의 핵심 키워드를 골라주세요.
+    </div>
+    <div class="code-input-wrap">
+      <input id="finalNumInput" maxlength="4" inputmode="numeric" placeholder="° ° ° °">
+    </div>
+    <select id="finalKeyword">
+      <option value="">핵심 키워드를 선택하세요</option>
+      <option value="지속가능">지속가능</option>
+      <option value="증기기관">증기기관</option>
+      <option value="가설">가설</option>
+      <option value="인공지능">인공지능</option>
+    </select>
+    <div class="btn" onclick="checkFinal()">접속 시도</div>
+    <div class="status-msg" id="status-final"></div>
+    <div class="hint-toggle" onclick="toggleHint()">힌트가 필요해요</div>
+    <div class="hint-box" id="hintBox">숫자 코드는 임무 1의 조각과 임무 2의 조각을 순서대로 이어붙인 것입니다. 키워드는 임무 3에서 유엔이 세운 목표의 이름과 관련 있어요.</div>
+  </section>
+
+  <!-- COMPLETE -->
+  <section class="screen" id="screen-complete">
+    <div class="stamp">MISSION<br>COMPLETE</div>
+    <h2 style="font-size:26px;">서버 접속 승인 🎉</h2>
+    <p style="color:var(--muted); font-size:14px; margin-top:8px;">신남연구소의 정식 연구원이 되었습니다.<br>이 화면을 선생님께 보여주세요.</p>
+
+    <div class="review-list">
+      <div class="rtitle">✅ 나의 공부 돌아보기 (스스로 체크)</div>
+      <label class="review-item"><input type="checkbox">과학적 탐구 방법을 이해하고 생활 속 문제에 대한 해결 방안을 제안할 수 있다.</label>
+      <label class="review-item"><input type="checkbox">과학의 발전이 인류 문명에 미친 영향을 이해할 수 있다.</label>
+      <label class="review-item"><input type="checkbox">인공지능 등 첨단 과학기술이 가져올 미래 사회의 변화를 추론할 수 있다.</label>
+      <label class="review-item"><input type="checkbox">인류의 지속가능한 삶을 위한 과학기술의 중요성과 역할을 알 수 있다.</label>
+
+      <div class="rtitle">✍️ 오늘의 실천 다짐</div>
+      <label class="rlabel">지속가능한 삶을 위해 내가 실천할 수 있는 일을 한 가지 적어보세요.</label>
+      <textarea id="reflection" placeholder="예: 사용하지 않는 방의 불을 끄고, 텀블러를 하나만 정해서 계속 사용하겠다."></textarea>
+      <div class="btn small" style="width:100%; margin-top:10px;" onclick="submitReflection()">다짐 제출하기</div>
+      <div class="status-msg" id="status-reflection" style="text-align:left;"></div>
+    </div>
+
+    <div class="bonus-hub">
+      <div class="bonus-card leaf" onclick="goTo('draw')">
+        <span class="ic">🎨</span>
+        <div class="ti">자유 그림판</div>
+        <div class="de">지속가능한 미래를<br>그림으로 표현하기</div>
+      </div>
+      <div class="bonus-card amber" onclick="goTo('game')">
+        <span class="ic">🌍</span>
+        <div class="ti">에너지 방울 합치기</div>
+        <div class="de">같은 방울을 합쳐<br>지구를 완성하기</div>
+      </div>
+    </div>
+
+    <div class="btn ghost" onclick="resetAll()" style="margin-top:14px;">처음부터 다시 하기</div>
+  </section>
+
+  <!-- DRAW -->
+  <section class="screen" id="screen-draw">
+    <div class="stage-head">
+      <span class="eyebrow">FREE LAB · 자유 활동</span>
+      <h2>미래를 그려보세요</h2>
+      <p>오늘 배운 지속가능한 미래 모습을 자유롭게 표현해보세요.</p>
+    </div>
+    <div class="palette" id="palette"></div>
+    <div class="brush-row" id="brushRow">
+      <div class="brush-btn" data-size="3">얇게</div>
+      <div class="brush-btn active" data-size="6">보통</div>
+      <div class="brush-btn" data-size="12">굵게</div>
+    </div>
+    <canvas id="drawCanvas"></canvas>
+    <div class="draw-actions">
+      <div class="btn ghost" style="flex:1;" onclick="clearCanvas()">지우기</div>
+      <div class="btn" style="flex:1;" onclick="saveDrawing()">이미지로 저장</div>
+    </div>
+    <div class="btn ghost" onclick="goTo('complete')" style="margin-top:10px;">← 돌아가기</div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="screen-game">
+    <div class="stage-head">
+      <span class="eyebrow">BONUS LAB · 미니게임</span>
+      <h2>에너지 방울 합치기</h2>
+      <p>같은 방울을 부딪혀 합치면 다음 단계가 돼요. 🌍 지구를 만들어보세요!</p>
+    </div>
+    <div class="game-hud">
+      <div class="game-score">SCORE <span id="gameScore">0</span></div>
+      <div class="next-preview">다음 <span id="nextBallIcon">🌱</span></div>
+    </div>
+    <div class="game-over-msg" id="gameOverMsg">게임 종료! 아래에서 점수를 등록해보세요.</div>
+    <canvas id="gameCanvas" width="300" height="410"></canvas>
+    <div class="game-actions">
+      <div class="btn ghost" style="flex:1;" onclick="restartGame()">다시하기</div>
+      <div class="btn" style="flex:1;" onclick="submitScore()">점수 등록</div>
+    </div>
+    <div class="leaderboard">
+      <div class="lb-title">🏆 우리 반 랭킹 TOP 10</div>
+      <div id="lbList"><div class="lb-row"><span class="nm" style="color:var(--muted)">불러오는 중...</span></div></div>
+    </div>
+    <div class="btn ghost" onclick="goTo('complete')" style="margin-top:14px;">← 돌아가기</div>
+  </section>
+
+</div>
+
+<div class="overlay" id="revealOverlay">
+  <div class="reveal-card">
+    <span class="eyebrow">CODE FRAGMENT ACQUIRED</span>
+    <div class="frag" id="fragText">20</div>
+    <p id="fragDesc">임무 1을 완료해 코드 조각을 획득했습니다.</p>
+    <div class="btn small" onclick="closeReveal()" style="width:100%;">다음 임무로 →</div>
+  </div>
+</div>
+
+<script>
+const STAGES = {
+  1: {
+    fragment: "20",
+    slot: "slot1",
+    mc: [
+      {
+        q: "'가설'에 대한 설명으로 가장 옳은 것은?",
+        opts: [
+          "탐구 문제에 대해 예상한 결과를 검증 가능하게 서술한 것",
+          "실험이 끝난 뒤에 알게 된 최종 결론",
+          "아무렇게나 떠오르는 생각을 적은 것",
+          "다른 사람의 실험 결과를 그대로 옮겨 적은 것"
+        ],
+        correct: 0
+      },
+      {
+        q: "실험에서 '일부러 변화시키는 조건'과 '똑같이 유지해야 하는 조건'을 통틀어 부르는 말은?",
+        opts: ["결론", "변인", "가설", "탐구 주제"],
+        correct: 1
+      },
+      {
+        q: "얼음 실험에서 '일정하게 유지해야 하는 조건'이 아닌 것은?",
+        opts: ["처음 물의 온도", "물의 양(300 mL)", "얼음의 크기", "컵의 크기"],
+        correct: 2
+      },
+      {
+        q: "탐구 결과가 처음 세운 가설과 맞지 않을 때, 가장 올바른 태도는?",
+        opts: [
+          "결과를 가설에 맞게 고쳐서 기록한다",
+          "실험이 잘못됐다고 여기고 탐구를 그만둔다",
+          "새로운 가설을 세워 다시 탐구한다",
+          "가설은 항상 맞으므로 신경 쓰지 않는다"
+        ],
+        correct: 2
+      },
+      {
+        q: "탐구 계획서에 들어갈 내용으로 옳지 않은 것은?",
+        opts: ["가설", "변인(변화시킬 조건/유지할 조건)", "준비물과 탐구 과정", "오늘의 급식 메뉴"],
+        correct: 3
+      },
+      {
+        q: "탐구를 수행하는 단계에서 지켜야 할 태도로 가장 옳은 것은?",
+        opts: [
+          "관찰하거나 측정한 내용을 정확하게 기록한다",
+          "결과가 마음에 들지 않으면 숫자를 바꿔서 기록한다",
+          "가설을 세우기 전에 먼저 실험부터 진행한다",
+          "탐구 주제만 검색하고 실험은 생략한다"
+        ],
+        correct: 0
+      },
+      {
+        q: "탐구 결과를 정리하는 방법으로 가장 옳은 것은?",
+        opts: [
+          "표, 그래프, 그림 등으로 정리하고 규칙성을 찾는다",
+          "측정값 중 마음에 드는 것만 골라 기록한다",
+          "한 번 관찰한 결과만으로 바로 일반화한다",
+          "측정하지 않고 예상만으로 결론짓는다"
+        ],
+        correct: 0
+      },
+      {
+        q: "탐구 계획서를 친구들과 공유한 뒤 해야 할 일로 가장 옳은 것은?",
+        opts: [
+          "친구들의 의견을 참고해 계획서를 보완한다",
+          "내 계획서는 어떤 의견이 와도 수정하지 않는다",
+          "다른 친구의 의견은 모두 무시한다",
+          "계획서를 공유하지 않고 혼자만 간직한다"
+        ],
+        correct: 0
+      }
+    ],
+    short: [
+      { q: "탐구 문제에 대해 예상되는 결과를 검증할 수 있도록 서술한 것을 무엇이라고 하나요?", answers: ["가설"] },
+      { q: "실험에서 일부러 변화시키는 조건과 똑같이 유지해야 하는 조건을 통틀어 무엇이라고 하나요?", answers: ["변인"] },
+      { q: "실험 결과를 표·그래프 등으로 정리해 규칙성을 찾고 내리는 최종 판단을 무엇이라 하나요?", answers: ["결론", "결론도출"] },
+      { q: "관찰하거나 측정한 내용을 정확히 기록하며 실험 계획대로 진행하는 단계를 무엇이라 하나요?", answers: ["탐구수행", "탐구 수행"] }
+    ],
+    ox: [
+      { q: "가설은 검증할 수 없어도 상관없다.", answer: false },
+      { q: "실험에서는 변화시키는 조건 외에는 모두 똑같이 유지해야 한다.", answer: true },
+      { q: "탐구 결과가 가설과 다르면 그 즉시 탐구를 중단해야 한다.", answer: false },
+      { q: "관찰하거나 측정한 내용은 정확하게 기록해야 한다.", answer: true }
+    ],
+    order: [
+      {
+        q: "과학적 탐구 과정을 순서대로 탭해서 배열해보세요.",
+        items: ["문제 인식 및 가설 설정", "탐구 설계 및 수행", "결과 정리와 결론 도출"]
+      },
+      {
+        q: "얼음 실험 절차를 순서대로 탭해서 배열해보세요.",
+        items: ["종이컵·얼음틀에 물을 얼린다", "같은 컵 3개에 물을 담고 얼음을 넣는다", "5분 간격으로 온도를 측정한다", "결과를 표로 정리해 비교한다"]
+      }
+    ],
+    match: [
+      {
+        q: "용어와 설명을 알맞게 연결해보세요.",
+        pairs: [
+          { left: "가설", right: "예상 결과를 검증 가능하게 서술한 것" },
+          { left: "변인", right: "실험에서 변화·유지해야 하는 조건" },
+          { left: "결론", right: "탐구 결과를 정리해 얻은 최종 판단" }
+        ]
+      },
+      {
+        q: "얼음 종류와 그 결과를 알맞게 연결해보세요.",
+        pairs: [
+          { left: "통얼음", right: "천천히 녹아 물의 온도가 서서히 낮아짐" },
+          { left: "조각 얼음", right: "표면적이 넓어 빠르게 녹아 온도가 빨리 낮아짐" },
+          { left: "얼음 없음", right: "물의 온도 변화가 거의 없음" }
+        ]
+      }
+    ]
+  },
+  2: {
+    fragment: "30",
+    slot: "slot2",
+    mc: [
+      {
+        q: "증기 기관의 발명이 가져온 변화로 옳은 것은?",
+        opts: [
+          "제품의 생산력이 줄어들었다",
+          "제품의 대량 생산이 가능해지고 산업혁명의 원동력이 되었다",
+          "사람들이 책을 읽을 수 없게 되었다",
+          "질병 치료 기술이 사라졌다"
+        ],
+        correct: 1
+      },
+      {
+        q: "'태양 중심설'이 인류에게 미친 영향으로 가장 알맞은 것은?",
+        opts: [
+          "지구가 우주의 중심이라는 생각을 바꾸는 계기가 되었다",
+          "증기 기관을 처음 발명하게 했다",
+          "백신 개발의 직접적인 원인이 되었다",
+          "스마트폰 개발의 기초가 되었다"
+        ],
+        correct: 0
+      },
+      {
+        q: "사물 인터넷(IoT)에 대한 설명으로 옳은 것은?",
+        opts: [
+          "종이책을 스캔해 전자책으로 바꾸는 기술이다",
+          "사물과 사물, 사람과 사물 사이에 정보를 주고받는 기술이다",
+          "화석 연료를 대체하는 에너지원이다",
+          "질병을 치료하는 백신의 한 종류이다"
+        ],
+        correct: 1
+      },
+      {
+        q: "첨단 과학기술과 미래 사회 변화에 대한 설명으로 옳지 않은 것은?",
+        opts: [
+          "인공지능과 로봇이 사람이 하던 일의 일부를 대신하게 된다",
+          "스마트 기기로 심박 수·혈압 등을 수집해 건강을 관리할 수 있다",
+          "첨단 과학기술은 실험실에서만 연구되고 우리 생활과는 관련이 없다",
+          "새로운 직업이 등장할 수 있다"
+        ],
+        correct: 2
+      },
+      {
+        q: "파스퇴르의 연구를 계기로 개발이 시작되어 인류의 수명을 늘리는 데 기여한 것은?",
+        opts: ["백신", "반도체", "증기 기관", "태양전지"],
+        correct: 0
+      },
+      {
+        q: "정보통신 기술의 발달에 대한 설명으로 옳은 것은?",
+        opts: [
+          "인터넷과 인공위성을 통해 원거리 통신이 가능해졌다",
+          "정보통신이 발달하면서 이동 수단이 사라졌다",
+          "전기가 없어도 통신할 수 있게 되었다",
+          "정보통신 기술은 의료 분야와 관련이 없다"
+        ],
+        correct: 0
+      },
+      {
+        q: "생명공학기술의 활용 사례로 옳은 것은?",
+        opts: [
+          "질병을 일으키는 유전자를 고치거나 인공 장기를 만든다",
+          "화석 연료를 대체하는 데만 쓰인다",
+          "증기의 힘으로 기계를 움직인다",
+          "책을 대량으로 인쇄한다"
+        ],
+        correct: 0
+      },
+      {
+        q: "오늘날 로봇과 드론이 활용되는 분야로 옳은 것은?",
+        opts: [
+          "재난 현장 투입이나 노인·장애인의 일상생활 보조",
+          "손편지만 배달하는 과거 방식 그대로 유지",
+          "증기 기관을 절대 대체할 수 없는 분야",
+          "인쇄술이 필요 없어진 시대를 의미함"
+        ],
+        correct: 0
+      },
+      {
+        q: "스마트 의료 기기 활용 사례로 옳은 것은?",
+        opts: [
+          "혈당, 심박 수, 혈압 등의 자료를 수집해 건강을 관리한다",
+          "모든 질병을 즉시 완치시킨다",
+          "인터넷 없이는 어떤 자료도 저장할 수 없다",
+          "과거 의료 기술보다 항상 비효율적이다"
+        ],
+        correct: 0
+      }
+    ],
+    short: [
+      { q: "지구가 태양 주위를 돈다는 이론으로, 지구가 우주의 중심이라는 인류의 생각을 바꾸는 계기가 된 것은 무엇인가요?", answers: ["태양중심설", "태양 중심설"] },
+      { q: "파스퇴르의 연구를 계기로 개발이 시작되어 질병을 예방하는 데 쓰이는 물질은 무엇인가요?", answers: ["백신"] },
+      { q: "사람의 DNA 염기 서열을 분석해 완성한, 유전자의 위치를 나타낸 것은 무엇인가요?", answers: ["유전자지도", "유전자 지도"] },
+      { q: "모든 사물을 인터넷으로 연결해 정보를 주고받는 기술을 알파벳 약자로 무엇이라 하나요?", answers: ["iot"] }
+    ],
+    ox: [
+      { q: "증기 기관의 발명은 산업혁명과 관련이 없다.", answer: false },
+      { q: "생명공학기술로 인공 장기나 인공 뼈를 만들 수 있다.", answer: true },
+      { q: "사물 인터넷은 사람과 사물 사이에는 정보를 주고받을 수 없다.", answer: false },
+      { q: "인공지능과 로봇의 발달로 사람이 하던 일의 일부를 기계가 대신할 수 있다.", answer: true }
+    ],
+    order: [
+      {
+        q: "인류 문명에 영향을 미친 과학기술을 시대 순서대로 탭해서 배열해보세요.",
+        items: ["불의 발견", "태양 중심설 등장", "증기 기관 발명", "페니실린 발견", "유전자 지도 완성"]
+      },
+      {
+        q: "정보통신 기술의 발달 순서를 탭해서 배열해보세요.",
+        items: ["횃불과 연기로 소식 전달", "인쇄술 발달로 책 대량 인쇄", "인터넷의 발달로 정보 공유", "인공위성을 이용한 원거리 통신"]
+      }
+    ],
+    match: [
+      {
+        q: "과학기술과 그것이 등장한 시대를 알맞게 연결해보세요.",
+        pairs: [
+          { left: "태양 중심설", right: "1600년대" },
+          { left: "증기 기관", right: "1700년대" },
+          { left: "페니실린 발견", right: "1900년대" }
+        ]
+      },
+      {
+        q: "첨단 기술과 그 활용 사례를 알맞게 연결해보세요.",
+        pairs: [
+          { left: "사물 인터넷(IoT)", right: "무인 상점 자동 결제, 자율주행 자동차" },
+          { left: "생명공학기술", right: "인공 장기 제작, 유전자 교정" },
+          { left: "로봇과 드론", right: "재난 현장 투입, 일상생활 보조" }
+        ]
+      }
+    ]
+  },
+  3: {
+    fragment: "지속가능",
+    slot: "slot3",
+    mc: [
+      {
+        q: "유엔(UN)이 세운 지속가능발전목표(SDGs)는 몇 년까지 달성을 목표로 하나요?",
+        opts: ["2025년", "2030년", "2050년", "2100년"],
+        correct: 1
+      },
+      {
+        q: "'지속가능한 삶'의 의미로 가장 알맞은 것은?",
+        opts: [
+          "현재 세대의 편의만을 최우선으로 하는 삶",
+          "미래 세대가 쓸 자원을 낭비·손상하지 않고 조화와 균형을 이루는 삶",
+          "과학기술 발전을 최대한 멈추는 삶",
+          "경제 성장만을 목표로 하는 삶"
+        ],
+        correct: 1
+      },
+      {
+        q: "스마트팜 기술을 활용할 때 함께 발생할 수 있는 문제점으로 옳은 것은?",
+        opts: [
+          "농작물 생산량이 줄어든다",
+          "센서와 기기 작동에 필요한 전기 에너지 사용량이 늘어난다",
+          "토양이 즉시 사막화된다",
+          "재배할 수 있는 작물이 없어진다"
+        ],
+        correct: 1
+      },
+      {
+        q: "다음 중 '신재생 에너지'에 해당하지 않는 것은?",
+        opts: ["수소 에너지", "풍력 에너지", "태양 에너지", "화석 연료"],
+        correct: 3
+      },
+      {
+        q: "지속가능한 삶을 위한 개인 실천으로 옳지 않은 것은?",
+        opts: [
+          "사용하지 않는 방의 불을 끈다",
+          "자원 순환을 위해 분리배출을 한다",
+          "가까운 거리는 걷거나 자전거를 이용한다",
+          "쓸 텀블러를 종류별로 여러 개 새로 구입한다"
+        ],
+        correct: 3
+      },
+      {
+        q: "폐플라스틱 재활용 기술의 효과로 옳은 것은?",
+        opts: [
+          "폐플라스틱을 새로운 자원으로 활용해 오염 물질을 줄인다",
+          "플라스틱 생산과 사용을 계속 늘리는 것이 목표다",
+          "바다 오염 문제와는 관련이 없다",
+          "화석 연료 사용량을 늘린다"
+        ],
+        correct: 0
+      },
+      {
+        q: "지속가능한 삶을 위해 국가 차원에서 할 수 있는 노력으로 옳은 것은?",
+        opts: [
+          "혁신적인 과학기술 개발을 위해 국제 사회와 협력한다",
+          "에너지 절약 캠페인을 전면 중단한다",
+          "재활용 관련 정책을 없앤다",
+          "환경 규제를 완화해 오염 물질 배출을 늘린다"
+        ],
+        correct: 0
+      },
+      {
+        q: "신재생 에너지의 역할로 가장 옳은 것은?",
+        opts: [
+          "기후 변화를 막고 에너지 부족 문제 해결에 기여한다",
+          "화석 연료 사용을 늘리기 위한 기술이다",
+          "에너지 문제와는 전혀 관련이 없다",
+          "자원을 더 낭비하게 만든다"
+        ],
+        correct: 0
+      },
+      {
+        q: "지속가능발전목표(SDGs)에 대한 설명으로 옳은 것은?",
+        opts: [
+          "유엔이 세운 국제적 협력 목표이다",
+          "한 나라만 지키면 되는 규칙이다",
+          "환경 문제와는 관련이 없다",
+          "기업만 실천하면 되는 목표다"
+        ],
+        correct: 0
+      }
+    ],
+    short: [
+      { q: "유엔이 2030년까지 달성하려고 세운 목표를 무엇이라고 하나요? (한글 또는 영어 약자)", answers: ["지속가능발전목표", "sdgs"] },
+      { q: "수소, 풍력, 태양 에너지처럼 화석 연료를 대체하는 에너지를 통틀어 무엇이라고 하나요?", answers: ["신재생에너지", "신재생 에너지"] },
+      { q: "빛, 온도, 습도, 토양 수분·영양분을 자동으로 관리해 농작물 생산량과 품질을 높이는 농장 기술은 무엇인가요?", answers: ["스마트팜", "스마트 팜"] },
+      { q: "미래 세대가 사용할 자원을 낭비·손상하지 않고 조화와 균형을 이루는 삶을 무엇이라 하나요?", answers: ["지속가능한삶"] }
+    ],
+    ox: [
+      { q: "스마트팜은 전기 에너지를 전혀 사용하지 않는다.", answer: false },
+      { q: "폐플라스틱 재활용 기술은 오염 물질을 줄이는 데 도움이 된다.", answer: true },
+      { q: "지속가능한 삶을 위한 노력은 국가만 하면 되고 개인은 실천하지 않아도 된다.", answer: false },
+      { q: "수소, 풍력, 태양 에너지는 신재생 에너지에 속한다.", answer: true }
+    ],
+    order: [
+      {
+        q: "지속가능한 미래를 위한 대응 흐름을 순서대로 탭해서 배열해보세요.",
+        items: ["문제 인식(기후 변화·에너지 부족)", "목표 수립(SDGs, 2030년)", "기술 개발(신재생 에너지 등)", "개인·국가 차원의 실천"]
+      },
+      {
+        q: "폐플라스틱 재활용 과정을 순서대로 탭해서 배열해보세요.",
+        items: ["폐플라스틱 수거", "분류 및 세척", "재가공을 통한 새 자원으로 전환", "제품 생산에 재사용"]
+      }
+    ],
+    match: [
+      {
+        q: "과학기술과 그 효과를 알맞게 연결해보세요.",
+        pairs: [
+          { left: "스마트팜", right: "생산량·품질 향상, 전기 에너지 사용 증가" },
+          { left: "폐플라스틱 재활용", right: "오염 물질 최소화, 자원 재사용" },
+          { left: "신재생 에너지", right: "기후 변화 억제, 에너지 부족 해결" }
+        ]
+      },
+      {
+        q: "실천 내용과 그 차원을 알맞게 연결해보세요.",
+        pairs: [
+          { left: "분리배출, 에너지 절약", right: "개인 차원의 실천" },
+          { left: "국제 사회와 협력해 SDGs 추진", right: "국가·국제 차원의 노력" },
+          { left: "신재생 에너지 기술 개발", right: "과학기술 차원의 대응" }
+        ]
+      }
+    ]
+  }
+};
+
+let userAnswers = {1:[], 2:[], 3:[]};
+let stagePassed = {1:false, 2:false, 3:false};
+let studentId = '';
+let studentName = '';
+let rng = Math.random;
+
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function seedFromString(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (Math.imul(31,h) + str.charCodeAt(i)) | 0; }
+  return h >>> 0;
+}
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(rng() * (i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function normalizeAnswer(s){
+  return String(s).trim().toLowerCase().replace(/\s+/g, '');
+}
+
+function startMission(){
+  const idInput = document.getElementById('studentId');
+  const nameInput = document.getElementById('studentName');
+  const id = idInput.value.trim();
+  const name = nameInput.value.trim();
+  if(!id){ idInput.focus(); idInput.style.borderColor = 'var(--alert)'; return; }
+  if(!name){ nameInput.focus(); nameInput.style.borderColor = 'var(--alert)'; return; }
+  studentId = id;
+  studentName = name;
+  rng = mulberry32(seedFromString(id + name + '-sdgs-2030'));
+  goTo('stage1');
+}
+
+function buildQuestionInstance(kind, item){
+  if(kind === 'short'){
+    return { type: 'short', q: item.q, answers: item.answers };
+  }
+  if(kind === 'ox'){
+    return { type: 'ox', q: item.q, answer: item.answer };
+  }
+  if(kind === 'order'){
+    const withIdx = item.items.map((text, i) => ({ text, oi: i }));
+    return { type: 'order', q: item.q, display: shuffleArr(withIdx), total: item.items.length };
+  }
+  if(kind === 'match'){
+    const withIdx = item.pairs.map((p, i) => ({ text: p.right, pi: i }));
+    return { type: 'match', q: item.q, lefts: item.pairs.map(p => p.left), chips: shuffleArr(withIdx) };
+  }
+  // mc
+  const withFlag = item.opts.map((text, i) => ({ text, isCorrect: i === item.correct }));
+  const shuffled = shuffleArr(withFlag);
+  return { type: 'mc', q: item.q, opts: shuffled.map(o => o.text), correct: shuffled.findIndex(o => o.isCorrect) };
+}
+
+function renderQuestions(stageNum){
+  const container = document.getElementById('q-stage' + stageNum);
+  const s = STAGES[stageNum];
+  const pickedMC = shuffleArr(s.mc).slice(0, 3).map(q => buildQuestionInstance('mc', q));
+  const pickedShort = shuffleArr(s.short).slice(0, 2).map(q => buildQuestionInstance('short', q));
+  const pickedOx = shuffleArr(s.ox).slice(0, 2).map(q => buildQuestionInstance('ox', q));
+  const useMatch = rng() < 0.5;
+  const pickedSpecial = useMatch
+    ? [buildQuestionInstance('match', shuffleArr(s.match)[0])]
+    : [buildQuestionInstance('order', shuffleArr(s.order)[0])];
+  const active = shuffleArr([...pickedMC, ...pickedShort, ...pickedOx, ...pickedSpecial]);
+  STAGES[stageNum].active = active;
+  container.innerHTML = '';
+  active.forEach((item, qi) => {
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.id = `qcard-${stageNum}-${qi}`;
+    let bodyHtml = '';
+
+    if(item.type === 'short'){
+      bodyHtml = `
+        <div class="short-wrap">
+          <span class="stag">단답</span>
+          <input type="text" class="short-input" id="short-${stageNum}-${qi}"
+                 placeholder="정답을 입력하세요"
+                 oninput="selectShortAnswer(${stageNum},${qi},this.value)">
+        </div>`;
+    } else if(item.type === 'ox'){
+      bodyHtml = `
+        <div class="ox-wrap">
+          <div class="ox-btn" id="ox-${stageNum}-${qi}-1" onclick="selectOx(${stageNum},${qi},true)">⭕<span>참</span></div>
+          <div class="ox-btn" id="ox-${stageNum}-${qi}-0" onclick="selectOx(${stageNum},${qi},false)">❌<span>거짓</span></div>
+        </div>`;
+    } else if(item.type === 'order'){
+      const chipsHtml = item.display.map(c =>
+        `<div class="order-chip" data-oi="${c.oi}" onclick="tapOrderChip(this,${stageNum},${qi})">${c.text}</div>`
+      ).join('');
+      bodyHtml = `
+        <div class="order-wrap">
+          <div class="order-hint">탭한 순서대로 아래에 쌓여요 ↓</div>
+          <div class="order-pool" id="pool-${stageNum}-${qi}">${chipsHtml}</div>
+          <div class="order-selected" id="seq-${stageNum}-${qi}"></div>
+          <div class="mini-reset" onclick="resetOrder(${stageNum},${qi})">↺ 순서 다시 선택</div>
+        </div>`;
+    } else if(item.type === 'match'){
+      const rowsHtml = item.lefts.map((left, li) =>
+        `<div class="match-row">
+          <div class="match-label">${left}</div>
+          <div class="drop-zone" data-li="${li}" data-tray="tray-${stageNum}-${qi}"></div>
+        </div>`
+      ).join('');
+      const chipsHtml = item.chips.map(c =>
+        `<div class="drag-chip" data-pi="${c.pi}">${c.text}</div>`
+      ).join('');
+      bodyHtml = `
+        <div class="match-wrap">
+          <div class="match-left">${rowsHtml}</div>
+          <div class="match-tray" id="tray-${stageNum}-${qi}">${chipsHtml}</div>
+        </div>`;
+    } else {
+      item.opts.forEach((opt, oi) => {
+        bodyHtml += `
+          <label class="opt" id="opt-${stageNum}-${qi}-${oi}">
+            <input type="radio" name="q-${stageNum}-${qi}" value="${oi}" onchange="selectAnswer(${stageNum},${qi},${oi})">
+            <span>${opt}</span>
+          </label>`;
+      });
+    }
+
+    const typeTag = item.type === 'mc' ? '' :
+      item.type === 'ox' ? '<span class="stag" style="margin-bottom:6px;display:inline-block;">OX</span>' :
+      item.type === 'order' ? '<span class="stag" style="margin-bottom:6px;display:inline-block;">순서</span>' :
+      item.type === 'match' ? '<span class="stag" style="margin-bottom:6px;display:inline-block;">연결</span>' : '';
+
+    card.innerHTML = `
+      <span class="qnum">Q${qi+1}</span>
+      <div class="qtext">${typeTag}${item.q}</div>
+      ${bodyHtml}
+      <div class="fb" id="fb-${stageNum}-${qi}"></div>
+    `;
+    container.appendChild(card);
+    if(item.type === 'match') initMatchDrag(card);
+  });
+}
+
+function selectAnswer(stageNum, qi, oi){
+  userAnswers[stageNum][qi] = oi;
+}
+function selectShortAnswer(stageNum, qi, val){
+  userAnswers[stageNum][qi] = val;
+}
+function selectOx(stageNum, qi, val){
+  userAnswers[stageNum][qi] = val;
+  document.getElementById(`ox-${stageNum}-${qi}-1`).classList.toggle('selected', val === true);
+  document.getElementById(`ox-${stageNum}-${qi}-0`).classList.toggle('selected', val === false);
+}
+
+/* ---- 순서 맞추기 (탭 방식) ---- */
+function tapOrderChip(el, stageNum, qi){
+  const seq = document.getElementById(`seq-${stageNum}-${qi}`);
+  const badge = document.createElement('span');
+  badge.className = 'seq-badge';
+  badge.textContent = seq.children.length + 1;
+  el.prepend(badge);
+  el.classList.add('placed');
+  el.onclick = null;
+  seq.appendChild(el);
+}
+function resetOrder(stageNum, qi){
+  const pool = document.getElementById(`pool-${stageNum}-${qi}`);
+  const seq = document.getElementById(`seq-${stageNum}-${qi}`);
+  Array.from(seq.children).forEach(chip => {
+    const badge = chip.querySelector('.seq-badge');
+    if(badge) badge.remove();
+    chip.classList.remove('placed');
+    chip.onclick = () => tapOrderChip(chip, stageNum, qi);
+    pool.appendChild(chip);
+  });
+  const fb = document.getElementById(`fb-${stageNum}-${qi}`);
+  fb.textContent = '';
+  fb.className = 'fb';
+}
+
+/* ---- 드래그 매칭 ---- */
+let dragState = null;
+function initMatchDrag(card){
+  card.querySelectorAll('.drag-chip').forEach(chip => {
+    chip.addEventListener('pointerdown', e => startDragChip(e, chip));
+  });
+}
+function startDragChip(e, chip){
+  e.preventDefault();
+  const rect = chip.getBoundingClientRect();
+  dragState = { chip, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top, originParent: chip.parentElement, originNext: chip.nextSibling };
+  chip.style.width = rect.width + 'px';
+  chip.classList.add('dragging');
+  document.body.appendChild(chip);
+  moveChipTo(e.clientX, e.clientY);
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', onDragEnd);
+}
+function onDragMove(e){ if(dragState) moveChipTo(e.clientX, e.clientY); }
+function moveChipTo(x, y){
+  const { chip, offsetX, offsetY } = dragState;
+  chip.style.left = (x - offsetX) + 'px';
+  chip.style.top = (y - offsetY) + 'px';
+}
+function onDragEnd(e){
+  if(!dragState) return;
+  const { chip, originParent, originNext } = dragState;
+  window.removeEventListener('pointermove', onDragMove);
+  window.removeEventListener('pointerup', onDragEnd);
+  chip.classList.remove('dragging');
+  chip.style.left = ''; chip.style.top = ''; chip.style.width = '';
+
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const zone = el ? el.closest('.drop-zone') : null;
+  if(zone){
+    const existing = zone.querySelector('.drag-chip');
+    if(existing){
+      const tray = document.getElementById(zone.dataset.tray);
+      if(tray) tray.appendChild(existing);
+    }
+    zone.appendChild(chip);
+    zone.classList.add('filled');
+  } else {
+    if(originNext) originParent.insertBefore(chip, originNext);
+    else originParent.appendChild(chip);
+  }
+  dragState = null;
+}
+
+function checkStage(stageNum){
+  const active = STAGES[stageNum].active;
+  let allCorrect = true;
+  active.forEach((item, qi) => {
+    const chosen = userAnswers[stageNum][qi];
+    const fb = document.getElementById(`fb-${stageNum}-${qi}`);
+
+    if(item.type === 'short'){
+      const box = document.getElementById(`short-${stageNum}-${qi}`);
+      box.classList.remove('correct', 'wrong');
+      if(chosen === undefined || String(chosen).trim() === ''){
+        allCorrect = false;
+        fb.textContent = '아직 답을 입력하지 않았어요.';
+        fb.className = 'fb no';
+        return;
+      }
+      const isRight = item.answers.map(normalizeAnswer).includes(normalizeAnswer(chosen));
+      if(isRight){
+        box.classList.add('correct');
+        fb.textContent = '정답입니다!';
+        fb.className = 'fb ok';
+      } else {
+        box.classList.add('wrong');
+        fb.textContent = '아직 정확하지 않아요. 다시 입력해보세요.';
+        fb.className = 'fb no';
+        allCorrect = false;
+      }
+      return;
+    }
+
+    if(item.type === 'ox'){
+      document.getElementById(`ox-${stageNum}-${qi}-1`).classList.remove('correct', 'wrong');
+      document.getElementById(`ox-${stageNum}-${qi}-0`).classList.remove('correct', 'wrong');
+      if(chosen === undefined){
+        allCorrect = false;
+        fb.textContent = '아직 선택하지 않았어요.';
+        fb.className = 'fb no';
+        return;
+      }
+      const btnId = chosen ? `ox-${stageNum}-${qi}-1` : `ox-${stageNum}-${qi}-0`;
+      if(chosen === item.answer){
+        document.getElementById(btnId).classList.add('correct');
+        fb.textContent = '정답입니다!';
+        fb.className = 'fb ok';
+      } else {
+        document.getElementById(btnId).classList.add('wrong');
+        fb.textContent = '아직 정확하지 않아요. 다시 생각해보세요.';
+        fb.className = 'fb no';
+        allCorrect = false;
+      }
+      return;
+    }
+
+    if(item.type === 'order'){
+      const seq = document.getElementById(`seq-${stageNum}-${qi}`);
+      const chosenOrder = Array.from(seq.children).map(c => Number(c.dataset.oi));
+      if(chosenOrder.length < item.total){
+        allCorrect = false;
+        fb.textContent = '모든 항목을 순서대로 탭해주세요.';
+        fb.className = 'fb no';
+        return;
+      }
+      const isRight = chosenOrder.every((v, i) => v === i);
+      if(isRight){
+        fb.textContent = '정답입니다!';
+        fb.className = 'fb ok';
+      } else {
+        fb.textContent = '순서가 아직 맞지 않아요. [순서 다시 선택] 후 다시 시도해보세요.';
+        fb.className = 'fb no';
+        allCorrect = false;
+      }
+      return;
+    }
+
+    if(item.type === 'match'){
+      const card = document.getElementById(`qcard-${stageNum}-${qi}`);
+      const zones = card.querySelectorAll('.drop-zone');
+      let filled = 0, right = 0;
+      zones.forEach(z => {
+        const chip = z.querySelector('.drag-chip');
+        if(chip){
+          filled++;
+          if(Number(chip.dataset.pi) === Number(z.dataset.li)) right++;
+        }
+      });
+      if(filled < zones.length){
+        allCorrect = false;
+        fb.textContent = '모든 칸에 카드를 연결해주세요.';
+        fb.className = 'fb no';
+        return;
+      }
+      if(right === zones.length){
+        fb.textContent = '정답입니다!';
+        fb.className = 'fb ok';
+      } else {
+        fb.textContent = '아직 정확하지 않아요. 카드를 다시 옮겨보세요.';
+        fb.className = 'fb no';
+        allCorrect = false;
+      }
+      return;
+    }
+
+    // multiple choice
+    item.opts.forEach((o, oi) => {
+      document.getElementById(`opt-${stageNum}-${qi}-${oi}`).classList.remove('correct', 'wrong');
+    });
+    if(chosen === undefined){
+      allCorrect = false;
+      fb.textContent = '아직 답을 선택하지 않았어요.';
+      fb.className = 'fb no';
+      return;
+    }
+    if(chosen === item.correct){
+      document.getElementById(`opt-${stageNum}-${qi}-${chosen}`).classList.add('correct');
+      fb.textContent = '정답입니다!';
+      fb.className = 'fb ok';
+    } else {
+      document.getElementById(`opt-${stageNum}-${qi}-${chosen}`).classList.add('wrong');
+      fb.textContent = '아직 정확하지 않아요. 다시 생각해보세요.';
+      fb.className = 'fb no';
+      allCorrect = false;
+    }
+  });
+
+  const statusEl = document.getElementById('status-' + stageNum);
+  if(allCorrect){
+    statusEl.textContent = '';
+    stagePassed[stageNum] = true;
+    document.getElementById(STAGES[stageNum].slot).textContent = STAGES[stageNum].fragment;
+    document.getElementById(STAGES[stageNum].slot).classList.add('filled');
+    showReveal(stageNum);
+  } else {
+    statusEl.textContent = '틀린 문제를 다시 확인하고 [임무 검증하기]를 눌러주세요.';
+  }
+}
+
+function showReveal(stageNum){
+  document.getElementById('fragText').textContent = STAGES[stageNum].fragment;
+  document.getElementById('fragDesc').textContent = `임무 ${stageNum}을 완료해 코드 조각을 획득했습니다.`;
+  document.getElementById('revealOverlay').classList.add('active');
+  window._nextAfterReveal = stageNum === 3 ? 'final' : ('stage' + (stageNum+1));
+}
+
+function closeReveal(){
+  document.getElementById('revealOverlay').classList.remove('active');
+  goTo(window._nextAfterReveal);
+  if(window._nextAfterReveal === 'final'){
+    document.getElementById('fragSummary').textContent =
+      `${STAGES[1].fragment} / ${STAGES[2].fragment} / ${STAGES[3].fragment}`;
+  }
+}
+
+function goTo(screenId){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screenId).classList.add('active');
+  window.scrollTo(0,0);
+  if(screenId === 'stage1' && !document.getElementById('q-stage1').hasChildNodes()) renderQuestions(1);
+  if(screenId === 'stage2' && !document.getElementById('q-stage2').hasChildNodes()) renderQuestions(2);
+  if(screenId === 'stage3' && !document.getElementById('q-stage3').hasChildNodes()) renderQuestions(3);
+  if(screenId === 'draw') initDrawCanvas();
+  if(screenId === 'game'){ initGameCanvas(); loadLeaderboard(); }
+}
+
+function toggleHint(){
+  document.getElementById('hintBox').classList.toggle('active');
+}
+
+function checkFinal(){
+  const num = document.getElementById('finalNumInput').value.trim();
+  const kw = document.getElementById('finalKeyword').value;
+  const correctNum = STAGES[1].fragment + STAGES[2].fragment; // "20" + "30" = "2030"
+  const statusEl = document.getElementById('status-final');
+  if(num === correctNum && kw === STAGES[3].fragment){
+    statusEl.textContent = '';
+    goTo('complete');
+  } else {
+    statusEl.textContent = '접속 실패. 코드 조각을 다시 확인해보세요.';
+  }
+}
+
+function resetAll(){
+  userAnswers = {1:[], 2:[], 3:[]};
+  stagePassed = {1:false, 2:false, 3:false};
+  ['slot1','slot2','slot3'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '?';
+    el.classList.remove('filled');
+  });
+  document.getElementById('q-stage1').innerHTML = '';
+  document.getElementById('q-stage2').innerHTML = '';
+  document.getElementById('q-stage3').innerHTML = '';
+  document.getElementById('finalNumInput').value = '';
+  document.getElementById('finalKeyword').value = '';
+  document.getElementById('reflection').value = '';
+  document.getElementById('status-reflection').textContent = '';
+  document.querySelectorAll('.review-item input[type=checkbox]').forEach(c => c.checked = false);
+  document.getElementById('studentId').value = '';
+  document.getElementById('studentName').value = '';
+  studentId = '';
+  studentName = '';
+  rng = Math.random;
+  goTo('intro');
+}
+
+/* ================== 자유 그림판 ================== */
+let drawCtx = null, drawing = false, lastX = 0, lastY = 0;
+let currentColor = '#16302A';
+let currentSize = 6;
+const PALETTE_COLORS = ['#16302A', '#E2574C', '#FFC145', '#4CAF7D', '#3B7DD8', '#B267D6'];
+
+function initDrawCanvas(){
+  const canvas = document.getElementById('drawCanvas');
+  const paletteEl = document.getElementById('palette');
+  if(paletteEl.childElementCount === 0){
+    PALETTE_COLORS.forEach((c, i) => {
+      const sw = document.createElement('div');
+      sw.className = 'swatch' + (i === 0 ? ' active' : '');
+      sw.style.background = c;
+      sw.onclick = () => {
+        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        sw.classList.add('active');
+        currentColor = c;
+      };
+      paletteEl.appendChild(sw);
+    });
+    document.querySelectorAll('.brush-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.brush-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSize = parseInt(btn.dataset.size, 10);
+      };
+    });
+  }
+  // size canvas to its displayed CSS box, only once (or on resize)
+  const ratioW = canvas.clientWidth || 300;
+  const ratioH = canvas.clientHeight || 225;
+  if(canvas.width !== ratioW || canvas.height !== ratioH){
+    canvas.width = ratioW;
+    canvas.height = ratioH;
+    drawCtx = canvas.getContext('2d');
+    drawCtx.fillStyle = '#F4F1E8';
+    drawCtx.fillRect(0, 0, canvas.width, canvas.height);
+    drawCtx.lineCap = 'round';
+    drawCtx.lineJoin = 'round';
+    bindDrawEvents(canvas);
+  }
+}
+
+function bindDrawEvents(canvas){
+  const pos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+  };
+  canvas.addEventListener('pointerdown', (e) => {
+    drawing = true;
+    const p = pos(e);
+    lastX = p.x; lastY = p.y;
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if(!drawing) return;
+    const p = pos(e);
+    drawCtx.strokeStyle = currentColor;
+    drawCtx.lineWidth = currentSize;
+    drawCtx.beginPath();
+    drawCtx.moveTo(lastX, lastY);
+    drawCtx.lineTo(p.x, p.y);
+    drawCtx.stroke();
+    lastX = p.x; lastY = p.y;
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(evt =>
+    canvas.addEventListener(evt, () => drawing = false)
+  );
+}
+
+function clearCanvas(){
+  if(!drawCtx) return;
+  const canvas = document.getElementById('drawCanvas');
+  drawCtx.fillStyle = '#F4F1E8';
+  drawCtx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function saveDrawing(){
+  const canvas = document.getElementById('drawCanvas');
+  canvas.toBlob((blob) => {
+    if(!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${studentId || '00000'}_${studentName || '연구원'}_지속가능한미래.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }, 'image/png');
+}
+
+/* ================== 미니게임: 에너지 방울 합치기 ================== */
+const BALL_ICONS = ['🌱','💧','🔥','🍃','☀️','🌍'];
+const BALL_COLORS = ['#4CAF7D','#3B7DD8','#E2574C','#7CC96B','#FFC145','#59C1D6'];
+let gameCanvas, gameCtx, balls = [], gameScore = 0, gameRunning = false, gameOver = false;
+let nextLevel = 1, animId = null, dropCooldown = false, overTimer = 0;
+const GW = 300, GH = 410, WALL = 10, TOPLINE = 56;
+
+function levelRadius(level){ return 16 + level * 9; }
+
+function initGameCanvas(){
+  gameCanvas = document.getElementById('gameCanvas');
+  if(!gameCtx) gameCtx = gameCanvas.getContext('2d');
+  gameCanvas.removeEventListener('pointerdown', handleDrop);
+  gameCanvas.addEventListener('pointerdown', handleDrop);
+  if(!gameRunning){ restartGame(); }
+}
+
+function pickNextLevel(){
+  return rng() < 0.7 ? 1 : 2;
+}
+
+function restartGame(){
+  balls = [];
+  gameScore = 0;
+  gameOver = false;
+  overTimer = 0;
+  document.getElementById('gameScore').textContent = '0';
+  document.getElementById('gameOverMsg').classList.remove('active');
+  nextLevel = pickNextLevel();
+  document.getElementById('nextBallIcon').textContent = BALL_ICONS[nextLevel - 1];
+  gameRunning = true;
+  if(animId) cancelAnimationFrame(animId);
+  loop();
+}
+
+function handleDrop(e){
+  if(!gameRunning || gameOver || dropCooldown) return;
+  const r = gameCanvas.getBoundingClientRect();
+  let x = (e.clientX - r.left) * (GW / r.width);
+  const rad = levelRadius(nextLevel);
+  x = Math.max(WALL + rad, Math.min(GW - WALL - rad, x));
+  balls.push({ x, y: TOPLINE, vx: 0, vy: 0, r: rad, level: nextLevel, settleTime: 0 });
+  gameScore += 0;
+  dropCooldown = true;
+  setTimeout(() => dropCooldown = false, 420);
+  nextLevel = pickNextLevel();
+  document.getElementById('nextBallIcon').textContent = BALL_ICONS[nextLevel - 1];
+}
+
+function loop(){
+  if(!gameRunning) return;
+  step();
+  render();
+  animId = requestAnimationFrame(loop);
+}
+
+function step(){
+  const g = 0.42, damping = 0.72, wallDamp = 0.55;
+  balls.forEach(b => { b.vy += g; b.x += b.vx; b.y += b.vy; b.vx *= 0.985; });
+
+  balls.forEach(b => {
+    if(b.x - b.r < WALL){ b.x = WALL + b.r; b.vx *= -wallDamp; }
+    if(b.x + b.r > GW - WALL){ b.x = GW - WALL - b.r; b.vx *= -wallDamp; }
+    if(b.y + b.r > GH - WALL){ b.y = GH - WALL - b.r; b.vy *= -damping; }
+  });
+
+  const merged = new Set();
+  for(let i = 0; i < balls.length; i++){
+    for(let j = i + 1; j < balls.length; j++){
+      const a = balls[i], b = balls[j];
+      if(merged.has(a) || merged.has(b)) continue;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy) || 0.01;
+      const minDist = a.r + b.r;
+      if(dist < minDist){
+        if(a.level === b.level && a.level < BALL_ICONS.length){
+          merged.add(a); merged.add(b);
+          const nl = a.level + 1;
+          const nb = {
+            x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 4,
+            vx: 0, vy: -2, r: levelRadius(nl), level: nl, settleTime: 0
+          };
+          balls.push(nb);
+          gameScore += nl * 10;
+          document.getElementById('gameScore').textContent = gameScore;
+        } else {
+          const overlap = (minDist - dist) / 2;
+          const nx = dx / dist, ny = dy / dist;
+          a.x -= nx * overlap; a.y -= ny * overlap;
+          b.x += nx * overlap; b.y += ny * overlap;
+          const push = 0.6;
+          a.vx -= nx * push; a.vy -= ny * push;
+          b.vx += nx * push; b.vy += ny * push;
+        }
+      }
+    }
+  }
+  if(merged.size) balls = balls.filter(b => !merged.has(b));
+
+  let danger = false;
+  balls.forEach(b => {
+    if(b.y - b.r < TOPLINE && Math.abs(b.vy) < 1.2) danger = true;
+  });
+  if(danger){
+    overTimer++;
+    if(overTimer > 90) endGame();
+  } else {
+    overTimer = Math.max(0, overTimer - 2);
+  }
+}
+
+function render(){
+  gameCtx.clearRect(0, 0, GW, GH);
+  gameCtx.strokeStyle = 'rgba(255,193,69,0.35)';
+  gameCtx.setLineDash([5,5]);
+  gameCtx.beginPath();
+  gameCtx.moveTo(WALL, TOPLINE);
+  gameCtx.lineTo(GW - WALL, TOPLINE);
+  gameCtx.stroke();
+  gameCtx.setLineDash([]);
+
+  balls.forEach(b => {
+    gameCtx.beginPath();
+    gameCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    gameCtx.fillStyle = BALL_COLORS[b.level - 1] || '#fff';
+    gameCtx.fill();
+    gameCtx.font = `${Math.floor(b.r * 1.1)}px sans-serif`;
+    gameCtx.textAlign = 'center';
+    gameCtx.textBaseline = 'middle';
+    gameCtx.fillText(BALL_ICONS[b.level - 1] || '🌍', b.x, b.y + 1);
+  });
+}
+
+function endGame(){
+  gameRunning = false;
+  gameOver = true;
+  if(animId) cancelAnimationFrame(animId);
+  document.getElementById('gameOverMsg').classList.add('active');
+}
+
+/* ================================================================
+   공유 랭킹: Google Apps Script 웹앱 연동
+   ------------------------------------------------------------------
+   1) 구글 시트를 하나 만들고, 확장 프로그램 > Apps Script 에서
+      함께 드린 Code.gs 내용을 붙여넣으세요.
+   2) 배포 > 새 배포 > 웹앱으로 배포 (액세스 권한: 전체, 실행: 나)
+   3) 배포 후 나오는 웹앱 URL을 아래 GAS_URL 에 붙여넣으세요.
+   ================================================================ */
+const GAS_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+function gasReady(){
+  return GAS_URL && !GAS_URL.includes("PASTE_YOUR");
+}
+
+async function loadLeaderboard(){
+  const listEl = document.getElementById('lbList');
+  if(!gasReady()){
+    listEl.innerHTML = `<div class="lb-row"><span class="nm" style="color:var(--muted)">랭킹 서버가 아직 연결되지 않았어요. (선생님 설정 필요)</span></div>`;
+    return;
+  }
+  listEl.innerHTML = `<div class="lb-row"><span class="nm" style="color:var(--muted)">불러오는 중...</span></div>`;
+  try{
+    const res = await fetch(`${GAS_URL}?action=list`);
+    const data = await res.json();
+    renderLeaderboard(data.leaderboard || []);
+  } catch(err){
+    listEl.innerHTML = `<div class="lb-row"><span class="nm" style="color:var(--muted)">랭킹을 불러오지 못했어요. 인터넷 연결을 확인해주세요.</span></div>`;
+  }
+}
+
+function renderLeaderboard(list){
+  const listEl = document.getElementById('lbList');
+  if(!list.length){
+    listEl.innerHTML = `<div class="lb-row"><span class="nm" style="color:var(--muted)">아직 랭킹이 없어요. 첫 기록의 주인공이 되어보세요!</span></div>`;
+    return;
+  }
+  listEl.innerHTML = list.slice(0, 10).map((row, i) =>
+    `<div class="lb-row"><span class="rank">${i+1}</span><span class="nm">${row.name}</span><span class="sc">${row.score}</span></div>`
+  ).join('');
+}
+
+async function submitScore(){
+  if(!gameOver){ endGame(); }
+  const btnStatus = document.getElementById('lbList');
+  if(!gasReady()){
+    btnStatus.innerHTML = `<div class="lb-row"><span class="nm" style="color:var(--muted)">랭킹 서버가 아직 연결되지 않았어요. (선생님 설정 필요)</span></div>`;
+    return;
+  }
+  const payload = { type: 'score', id: studentId || '00000', name: studentName || '연구원', score: gameScore };
+  try{
+    // text/plain으로 보내야 Apps Script에서 preflight(OPTIONS) 없이 바로 처리됩니다.
+    await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    await loadLeaderboard();
+  } catch(err){
+    console.error('leaderboard save failed', err);
+  }
+}
+
+async function submitReflection(){
+  const statusEl = document.getElementById('status-reflection');
+  const text = document.getElementById('reflection').value.trim();
+  if(!text){
+    statusEl.textContent = '다짐을 먼저 입력해주세요.';
+    return;
+  }
+  if(!gasReady()){
+    statusEl.textContent = '제출 서버가 아직 연결되지 않았어요. (선생님 설정 필요)';
+    return;
+  }
+  statusEl.textContent = '제출하는 중...';
+  const payload = {
+    type: 'reflection',
+    id: studentId || '00000',
+    name: studentName || '연구원',
+    text: text
+  };
+  try{
+    await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    statusEl.textContent = '✅ 다짐이 제출되었습니다. 선생님이 확인하실 수 있어요.';
+  } catch(err){
+    console.error('reflection submit failed', err);
+    statusEl.textContent = '제출에 실패했어요. 인터넷 연결을 확인하고 다시 시도해주세요.';
+  }
+}
+</script>
+</body>
+</html>
