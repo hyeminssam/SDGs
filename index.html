@@ -1507,7 +1507,7 @@ function guardGoGame(){
 const BALL_ICONS = ['🌱','💧','🍃','🔥','☀️','🌊','🌾','🌳','🏞️','🌍'];
 const BALL_COLORS = ['#8FD97A','#59C1D6','#7CC96B','#E2574C','#FFC145','#3B9DD8','#E0B25A','#4CAF7D','#59A9D9','#2E86AB'];
 let gameCanvas, gameCtx, balls = [], gameScore = 0, gameRunning = false, gameOver = false;
-let nextLevel = 1, animId = null, dropCooldown = false, overTimer = 0, graceFrames = 0;
+let nextLevel = 1, animId = null, dropCooldown = false, overTimer = 0;
 const GW = 320, GH = 440, WALL = 10, TOPLINE = 58;
 
 function levelRadius(level){ return 13 + level * 6; }
@@ -1529,7 +1529,6 @@ function restartGame(){
   gameScore = 0;
   gameOver = false;
   overTimer = 0;
-  graceFrames = 0;
   document.getElementById('gameScore').textContent = '0';
   document.getElementById('gameOverMsg').classList.remove('active');
   document.getElementById('gameOverMsg').innerHTML = '선을 넘으면 게임이 자동으로 종료되고 점수가 등록돼요.';
@@ -1612,11 +1611,9 @@ function step(){
   balls.forEach(b => {
     if(b.y - b.r < TOPLINE && Math.abs(b.vy) < 1.2) danger = true;
   });
-  if(graceFrames > 0){
-    graceFrames--;
-  } else if(danger){
+  if(danger){
     overTimer++;
-    if(overTimer > 8) endGame();
+    if(overTimer > 4) endGame();
   } else {
     overTimer = Math.max(0, overTimer - 3);
   }
@@ -1649,22 +1646,9 @@ function endGame(){
   gameOver = true;
   if(animId) cancelAnimationFrame(animId);
   const msgEl = document.getElementById('gameOverMsg');
-  msgEl.innerHTML = `선을 넘어 게임이 종료됐어요! 점수를 자동으로 등록하는 중...
-    <div class="btn small" style="margin-top:10px;" onclick="continueGame()">🔄 이어서 계속하기</div>`;
+  msgEl.innerHTML = '선을 넘어 게임이 종료됐어요! 점수가 자동으로 등록되었어요. 다시 하려면 [처음부터 다시하기]를 눌러주세요.';
   msgEl.classList.add('active');
   submitScore();
-}
-
-function continueGame(){
-  overTimer = 0;
-  graceFrames = 90; // 약 1.5초 동안은 게임오버 판정을 잠시 쉬어서 정리할 시간을 줌
-  gameOver = false;
-  document.getElementById('gameOverMsg').classList.remove('active');
-  gameRunning = true;
-  nextLevel = pickNextLevel();
-  document.getElementById('nextBallIcon').textContent = BALL_ICONS[nextLevel - 1];
-  if(animId) cancelAnimationFrame(animId);
-  loop();
 }
 
 /* ================================================================
